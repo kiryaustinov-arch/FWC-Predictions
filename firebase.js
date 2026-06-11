@@ -1,10 +1,4 @@
-// firebase.js
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-
-import {
-    getFirestore
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+// Подключение Firebase
 
 const firebaseConfig = {
   apiKey: "AIzaSyB7zwscFRdQl8Izk522LLesgbAG_8YqNlQ",
@@ -15,8 +9,6 @@ const firebaseConfig = {
   appId: "1:265647409165:web:0bc0e7ed72ffa81e6fed44"
 };
 
-const app = initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 
-const db = getFirestore(app);
-
-export { db };
+const db = firebase.firestore();
