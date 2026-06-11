@@ -1,19 +1,27 @@
+// ==========================
+// Telegram
+// ==========================
+
 Telegram.WebApp.ready();
 Telegram.WebApp.expand();
+
+// ==========================
+// Пользователь
+// ==========================
 
 let telegramUser;
 
 if (
     Telegram.WebApp.initDataUnsafe &&
     Telegram.WebApp.initDataUnsafe.user
-){
+) {
 
     telegramUser =
-    Telegram.WebApp.initDataUnsafe.user;
+        Telegram.WebApp.initDataUnsafe.user;
 
-}else{
+} else {
 
-    // Для тестирования в браузере
+    // Тестовый пользователь для браузера
 
     telegramUser = {
 
@@ -24,340 +32,231 @@ if (
     };
 
 }
-import { db } from "./firebase.js";
 
-import {
+// ==========================
+// Регистрация пользователя
+// ==========================
 
-doc,
+async function registerUser() {
 
-getDoc,
+    try {
 
-setDoc
+        const userRef = db
+            .collection("users")
+            .doc(
+                telegramUser.id.toString()
+            );
+
+        const userDoc =
+            await userRef.get();
+
+        if (userDoc.exists) {
+
+            console.log(
+                "Пользователь уже существует"
+            );
+
+        } else {
+
+            await userRef.set({
+
+                name:
+                    telegramUser.first_name,
+
+                points: 0,
+
+                created_at:
+                    new Date().toISOString()
+
+            });
+
+            console.log(
+                "Пользователь создан"
+            );
+
+        }
+
+    } catch (error) {
+
+        console.log(error);
+
+    }
 
 }
 
-from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-Telegram.WebApp.ready();
-Telegram.WebApp.expand();
+// ==========================
+// Загрузка матчей
+// ==========================
 
-let telegramUser = null;
+async function loadMatches() {
 
-if (
-    Telegram.WebApp.initDataUnsafe &&
-    Telegram.WebApp.initDataUnsafe.user
-){
+    try {
 
-    telegramUser =
-    Telegram.WebApp.initDataUnsafe.user;
+        let html = "";
 
-}
+        const snapshot =
+            await db
+                .collection("matches")
+                .get();
 
-const matches = [
+        snapshot.forEach((document) => {
 
-{
-    team1:"Аргентина",
-    team2:"Германия"
-},
+            const match =
+                document.data();
 
-{
-    team1:"Бразилия",
-    team2:"Франция"
-}
+            html += `
 
-];
-
-function showPage(page){
-
-    let content = document.getElementById("content");
-
-    if(page==="matches"){
-
-        let html="";
-
-        matches.forEach(match=>{
-
-            html+=`
             <div class="card">
 
-            <h2>
-            ${match.team1}
-            -
-            ${match.team2}
-            </h2>
+                <h2>
 
-            <div class="score">
+                    ${match.team1}
+                    -
+                    ${match.team2}
 
-            <input type="number">
+                </h2>
 
-            <span>:</span>
+                <p>
 
-            <input type="number">
+                    ${match.match_date}
+
+                </p>
+
+                <div class="score">
+
+                    <input
+                        id="score1_${document.id}"
+                        type="number"
+                        value="0"
+                    >
+
+                    :
+
+                    <input
+                        id="score2_${document.id}"
+                        type="number"
+                        value="0"
+                    >
+
+                </div>
+
+                <br>
+
+                <button
+                    onclick="savePrediction('${document.id}')"
+                >
+
+                    Сохранить прогноз
+
+                </button>
 
             </div>
 
-            <br>
-
-            <button>
-            Сохранить прогноз
-            </button>
-
-            </div>
             `;
 
         });
 
-        content.innerHTML=html;
+        document
+            .getElementById(
+                "content"
+            )
+            .innerHTML = html;
+
+    } catch (error) {
+
+        console.log(error);
 
     }
 
-    if(page==="leaderboard"){
+}
 
-        content.innerHTML=`
+// ==========================
+// Сохранение прогноза
+// ==========================
 
-        <div class="card">
+async function savePrediction(matchId) {
 
-        <h2>🏆 Таблица</h2>
+    try {
 
-        <p>1. Иван — 15</p>
+        let score1 =
+            parseInt(
+                document.getElementById(
+                    "score1_" + matchId
+                ).value
+            );
 
-        <p>2. Алексей — 12</p>
+        let score2 =
+            parseInt(
+                document.getElementById(
+                    "score2_" + matchId
+                ).value
+            );
 
-        <p>3. Сергей — 9</p>
+        if (
+            isNaN(score1) ||
+            isNaN(score2)
+        ) {
 
-        </div>
+            alert(
+                "Введите счет"
+            );
 
-        `;
-
-    }
-
-    if(page==="profile"){
-
-        let user="Друг";
-
-        if(Telegram.WebApp.initDataUnsafe.user){
-
-            user=Telegram.WebApp.initDataUnsafe.user.first_name;
+            return;
 
         }
 
-        content.innerHTML=`
+        await db
+            .collection(
+                "predictions"
+            )
+            .add({
 
-        <div class="card">
+                user_id:
+                    telegramUser.id.toString(),
 
-        <h2>${user}</h2>
+                match_id:
+                    matchId,
 
-        <p>Баллы: 0</p>
+                prediction1:
+                    score1,
 
-        <p>Прогнозов: 0</p>
+                prediction2:
+                    score2,
 
-        </div>
+                earned_points:
+                    0,
 
-        `;
+                created_at:
+                    new Date().toISOString()
 
-    }
+            });
 
-}
-
-loadPage("matches");
-Telegram.WebApp.ready();
-Telegram.WebApp.expand();
-async function registerUser(){
-
-    if(!telegramUser){
-
-        console.log("Нет данных Telegram");
-
-        return;
-
-    }
-
-    const userRef = doc(
-        db,
-        "users",
-        telegramUser.id.toString()
-    );
-
-    const userSnap =
-    await getDoc(userRef);
-
-    if(userSnap.exists()){
-
-        console.log(
-            "Пользователь уже существует"
+        alert(
+            "Прогноз сохранен"
         );
 
-    }else{
+    } catch (error) {
 
-        await setDoc(userRef,{
+        console.log(error);
 
-            name:
-            telegramUser.first_name,
-
-            points:0,
-
-            created_at:
-            new Date().toISOString()
-
-        });
-
-        console.log(
-            "Пользователь создан"
-        );
-
-    }
-
-}
-registerUser();
-async function registerUser(){
-
-    const userRef = db
-    .collection("users")
-    .doc(
-        telegramUser.id.toString()
-    );
-
-    const doc = await userRef.get();
-
-    if(doc.exists){
-
-        console.log(
-            "Пользователь найден"
-        );
-
-    }else{
-
-        await userRef.set({
-
-            name:
-            telegramUser.first_name,
-
-            points:0,
-
-            created_at:
-            new Date().toISOString()
-
-        });
-
-        console.log(
-            "Пользователь создан"
+        alert(
+            "Ошибка сохранения"
         );
 
     }
 
 }
 
-registerUser();
+// ==========================
+// Запуск приложения
+// ==========================
 
-async function loadMatches(){
+async function startApp() {
 
-    let html = "";
+    await registerUser();
 
-    const snapshot =
-    await db
-    .collection("matches")
-    .get();
-
-    snapshot.forEach((doc)=>{
-
-        const match = doc.data();
-
-        html += `
-
-        <div class="card">
-
-        <h2>
-
-        ${match.team1}
-
-        -
-
-        ${match.team2}
-
-        </h2>
-
-        <p>
-
-        ${match.match_date}
-
-        </p>
-
-        <div class="score">
-
-        <input
-        id="score1_${doc.id}"
-        type="number"
-        value="0">
-
-        :
-
-        <input
-        id="score2_${doc.id}"
-        type="number"
-        value="0">
-
-        </div>
-
-        <br>
-
-        <button
-        onclick="savePrediction('${doc.id}')">
-
-        Сохранить прогноз
-
-        </button>
-
-        </div>
-
-        `;
-
-    });
-
-    document
-    .getElementById(
-    "content"
-    )
-    .innerHTML = html;
+    await loadMatches();
 
 }
-async function savePrediction(matchId){
 
-    let p1 =
-    parseInt(
-    document.getElementById(
-    "score1_" + matchId
-    ).value);
-
-    let p2 =
-    parseInt(
-    document.getElementById(
-    "score2_" + matchId
-    ).value);
-
-    await db
-    .collection(
-    "predictions"
-    )
-    .add({
-
-        user_id:
-        telegramUser.id.toString(),
-
-        match_id:
-        matchId,
-
-        prediction1:
-        p1,
-
-        prediction2:
-        p2,
-
-        earned_points:
-        0
-
-    });
-
-    alert(
-    "Прогноз сохранен"
-    );
-
-}
+startApp();
