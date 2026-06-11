@@ -1,43 +1,74 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>World Cup Predictor</title>
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="style.css">
+    <title>
+        ⚽ World Cup Predictor 2026
+    </title>
+
+    <link rel="stylesheet"
+          href="style.css">
+
 </head>
 
 <body>
 
-<div class="container">
+    <div class="container">
 
-    <h1>⚽ World Cup Predictor 2026</h1>
+        <h1>
+            ⚽ World Cup Predictor 2026
+        </h1>
 
-    <div class="menu">
-        <button onclick="showPage('matches')">Матчи</button>
-        <button onclick="showPage('leaderboard')">Лидеры</button>
-        <button onclick="showPage('profile')">Профиль</button>
+        <div class="menu">
+
+            <button onclick="loadMatches()">
+                Матчи
+            </button>
+
+            <button onclick="showLeaderboard()">
+                Лидеры
+            </button>
+
+            <button onclick="showProfile()">
+                Профиль
+            </button>
+
+        </div>
+
+        <div id="content">
+
+            <p>
+                Загрузка...
+            </p>
+
+        </div>
+
     </div>
 
-    <div id="content">
+    <!-- Telegram Mini App -->
 
-    </div>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-</div>
+    <!-- Firebase -->
 
-<script type="module" src="app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+
+    <!-- Настройки Firebase -->
+
+    <script src="firebase.js"></script>
+
+    <!-- Основное приложение -->
+
+    <script src="app.js"></script>
 
 </body>
+
 </html>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
-
-<script src="firebase.js"></script>
-
-<script src="app.js"></script>
