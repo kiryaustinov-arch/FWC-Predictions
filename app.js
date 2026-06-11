@@ -158,7 +158,7 @@ function showPage(page){
 
 }
 
-showPage("matches");
+loadPage("matches");
 Telegram.WebApp.ready();
 Telegram.WebApp.expand();
 async function registerUser(){
@@ -247,3 +247,117 @@ async function registerUser(){
 }
 
 registerUser();
+
+async function loadMatches(){
+
+    let html = "";
+
+    const snapshot =
+    await db
+    .collection("matches")
+    .get();
+
+    snapshot.forEach((doc)=>{
+
+        const match = doc.data();
+
+        html += `
+
+        <div class="card">
+
+        <h2>
+
+        ${match.team1}
+
+        -
+
+        ${match.team2}
+
+        </h2>
+
+        <p>
+
+        ${match.match_date}
+
+        </p>
+
+        <div class="score">
+
+        <input
+        id="score1_${doc.id}"
+        type="number"
+        value="0">
+
+        :
+
+        <input
+        id="score2_${doc.id}"
+        type="number"
+        value="0">
+
+        </div>
+
+        <br>
+
+        <button
+        onclick="savePrediction('${doc.id}')">
+
+        Сохранить прогноз
+
+        </button>
+
+        </div>
+
+        `;
+
+    });
+
+    document
+    .getElementById(
+    "content"
+    )
+    .innerHTML = html;
+
+}
+async function savePrediction(matchId){
+
+    let p1 =
+    parseInt(
+    document.getElementById(
+    "score1_" + matchId
+    ).value);
+
+    let p2 =
+    parseInt(
+    document.getElementById(
+    "score2_" + matchId
+    ).value);
+
+    await db
+    .collection(
+    "predictions"
+    )
+    .add({
+
+        user_id:
+        telegramUser.id.toString(),
+
+        match_id:
+        matchId,
+
+        prediction1:
+        p1,
+
+        prediction2:
+        p2,
+
+        earned_points:
+        0
+
+    });
+
+    alert(
+    "Прогноз сохранен"
+    );
+
+}
