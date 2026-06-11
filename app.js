@@ -1,4 +1,30 @@
+import { db } from "./firebase.js";
+
+import {
+
+doc,
+
+getDoc,
+
+setDoc
+
+}
+
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 Telegram.WebApp.ready();
+Telegram.WebApp.expand();
+
+let telegramUser = null;
+
+if (
+    Telegram.WebApp.initDataUnsafe &&
+    Telegram.WebApp.initDataUnsafe.user
+){
+
+    telegramUser =
+    Telegram.WebApp.initDataUnsafe.user;
+
+}
 
 const matches = [
 
@@ -109,3 +135,50 @@ function showPage(page){
 showPage("matches");
 Telegram.WebApp.ready();
 Telegram.WebApp.expand();
+async function registerUser(){
+
+    if(!telegramUser){
+
+        console.log("Нет данных Telegram");
+
+        return;
+
+    }
+
+    const userRef = doc(
+        db,
+        "users",
+        telegramUser.id.toString()
+    );
+
+    const userSnap =
+    await getDoc(userRef);
+
+    if(userSnap.exists()){
+
+        console.log(
+            "Пользователь уже существует"
+        );
+
+    }else{
+
+        await setDoc(userRef,{
+
+            name:
+            telegramUser.first_name,
+
+            points:0,
+
+            created_at:
+            new Date().toISOString()
+
+        });
+
+        console.log(
+            "Пользователь создан"
+        );
+
+    }
+
+}
+registerUser();
