@@ -59,3 +59,55 @@ async function addMatch(){
     loadAdminMatches();
 
 }
+
+async function loadAdminMatches(){
+
+    let html="";
+
+    const snapshot =
+    await db
+    .collection(
+    "matches"
+    )
+    .get();
+
+    snapshot.forEach((doc)=>{
+
+        const match =
+        doc.data();
+
+        html += `
+
+        <div class="card">
+
+        <h3>
+
+        ${match.team1}
+
+        -
+
+        ${match.team2}
+
+        </h3>
+
+        <p>
+
+        ${match.match_date}
+
+        </p>
+
+        </div>
+
+        `;
+
+    });
+
+    document
+    .getElementById(
+    "matches"
+    ).innerHTML =
+    html;
+
+}
+
+loadAdminMatches();
