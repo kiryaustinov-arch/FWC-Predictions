@@ -1,15 +1,14 @@
 body{
     margin:0;
-    padding:0;
+    padding:20px;
     background:#17212b;
     color:white;
-    font-family:Arial;
+    font-family:Arial,sans-serif;
 }
 
 .container{
-    max-width:600px;
+    max-width:700px;
     margin:auto;
-    padding:20px;
 }
 
 h1{
@@ -22,32 +21,44 @@ h1{
     margin-bottom:20px;
 }
 
-button{
+.menu button{
     flex:1;
     padding:12px;
     border:none;
     border-radius:10px;
-    background:#2aabee;
+    background:#2AABEE;
     color:white;
-    font-size:16px;
     cursor:pointer;
+    font-size:16px;
 }
 
 .card{
     background:#243447;
-    margin-bottom:15px;
-    padding:15px;
     border-radius:12px;
+    padding:15px;
+    margin-bottom:15px;
 }
 
 .score{
     display:flex;
+    align-items:center;
     gap:10px;
     margin-top:10px;
 }
 
-input{
-    width:50px;
+.score input{
+    width:60px;
     padding:8px;
     font-size:18px;
+    text-align:center;
+}
+
+.card button{
+    margin-top:10px;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    background:#2AABEE;
+    color:white;
+    cursor:pointer;
 }
