@@ -1,3 +1,29 @@
+Telegram.WebApp.ready();
+Telegram.WebApp.expand();
+
+let telegramUser;
+
+if (
+    Telegram.WebApp.initDataUnsafe &&
+    Telegram.WebApp.initDataUnsafe.user
+){
+
+    telegramUser =
+    Telegram.WebApp.initDataUnsafe.user;
+
+}else{
+
+    // Для тестирования в браузере
+
+    telegramUser = {
+
+        id: 999999,
+
+        first_name: "Developer"
+
+    };
+
+}
 import { db } from "./firebase.js";
 
 import {
@@ -181,4 +207,43 @@ async function registerUser(){
     }
 
 }
+registerUser();
+async function registerUser(){
+
+    const userRef = db
+    .collection("users")
+    .doc(
+        telegramUser.id.toString()
+    );
+
+    const doc = await userRef.get();
+
+    if(doc.exists){
+
+        console.log(
+            "Пользователь найден"
+        );
+
+    }else{
+
+        await userRef.set({
+
+            name:
+            telegramUser.first_name,
+
+            points:0,
+
+            created_at:
+            new Date().toISOString()
+
+        });
+
+        console.log(
+            "Пользователь создан"
+        );
+
+    }
+
+}
+
 registerUser();
